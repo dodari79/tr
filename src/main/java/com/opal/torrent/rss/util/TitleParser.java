@@ -6,12 +6,15 @@ import lombok.Getter;
 import org.jsoup.helper.StringUtil;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by DoYoungKim on 2019.03.25..
  */
 public class TitleParser {
 
-    public static TitleResult getTitleResult(String title) {
+    public static TitleResult getTitleResult(String title, Date pubDate) {
         if (StringUtils.isEmpty(title)) {
             return null;
         }
@@ -30,6 +33,11 @@ public class TitleParser {
                 keyword = keyword.length() == 8 ? keyword.substring(2) : keyword;
                 date = Integer.valueOf(keyword);
             }
+        }
+        if (date == null && pubDate != null){
+            SimpleDateFormat transFormat = new SimpleDateFormat("yyyyMMdd");
+            String to = transFormat.format(pubDate);
+            date = Integer.valueOf(to.substring(2));
         }
         return TitleResult.of(profile, date);
     }

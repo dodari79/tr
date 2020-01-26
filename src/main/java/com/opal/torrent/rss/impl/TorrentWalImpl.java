@@ -47,7 +47,7 @@ public class TorrentWalImpl implements ITorrentService {
             String param = WebUtil.urlEncodeUTF8(mapParam);
             String queryUrl = String.format("%s/bbs/s.php?%s", BASE_URL, param);
             try {
-                docList.add(Jsoup.connect(queryUrl).method(Connection.Method.GET).ignoreContentType(true).get());
+                docList.add(Jsoup.connect(queryUrl).method(Connection.Method.GET).ignoreContentType(true).validateTLSCertificates(false).get());
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -105,7 +105,7 @@ public class RssService {
                             return;
                         }
 
-                        TitleParser.TitleResult titleResult = TitleParser.getTitleResult(item.getTitle());
+                        TitleParser.TitleResult titleResult = TitleParser.getTitleResult(item.getTitle(), item.getPubDate());
                         if (StringUtils.isEmpty(titleResult.getProfile()) == false) {
                             item.setComments(titleResult.getProfile());
                         }
