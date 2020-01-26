@@ -22,7 +22,7 @@ public interface ITorrentService {
 
     List<Category> getCategory(Element element, String board);
 
-    TitleLink getTitleAndLink(Element element);
+    TitleLink getTitleAndLink(Element element, String search);
 
     Date getDate(Element element);
 

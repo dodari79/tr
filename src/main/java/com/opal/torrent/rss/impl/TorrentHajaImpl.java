@@ -25,6 +25,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
+import static java.util.Optional.*;
+
 @Service(TorrentHajaImpl.SITE_SIMPLE_NAME)
 public class TorrentHajaImpl implements ITorrentService {
 
@@ -63,7 +65,7 @@ public class TorrentHajaImpl implements ITorrentService {
             mapParam.put("sop", "and");
             mapParam.put("sfl", "wr_subject");
             mapParam.put("stx", search);
-            mapParam.put("page", page);
+            mapParam.put("page", p);
             String param = WebUtil.urlEncodeUTF8(mapParam);
             String queryUrl = String.format("%s/bbs/board.php?%s", BASE_URL, param);
             try {
@@ -104,12 +106,14 @@ public class TorrentHajaImpl implements ITorrentService {
     }
 
     @Override
-    public TitleLink getTitleAndLink(Element element) {
+    public TitleLink getTitleAndLink(Element element, String search) {
         TitleLink titleLink = new TitleLink();
-        Element titleElem = element.select("a").get(0);
-        titleLink.setTitle(titleElem.text());
+        Element titleATag = ofNullable(element.select("div[class=td-subject ellipsis] a")).orElse(new Elements())
+                .stream().filter(e -> e.text().indexOf(search) > -1)
+                .findFirst().orElse(null);
+        titleLink.setTitle(titleATag.text());
 
-        String linkUrl = titleElem.attr("href");
+        String linkUrl = titleATag.attr("href");
         if (linkUrl.startsWith("http")) {
             titleLink.setLink(linkUrl);
         } else {

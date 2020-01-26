@@ -43,7 +43,7 @@ public class TorrentWalImpl implements ITorrentService {
         IntStream.range(page, maxPage).parallel().forEach(p -> {
             Map<String, Object> mapParam = new HashMap<>();
             mapParam.put("k", search);
-            mapParam.put("page", page);
+            mapParam.put("page", p);
             String param = WebUtil.urlEncodeUTF8(mapParam);
             String queryUrl = String.format("%s/bbs/s.php?%s", BASE_URL, param);
             try {
@@ -74,7 +74,7 @@ public class TorrentWalImpl implements ITorrentService {
     }
 
     @Override
-    public TitleLink getTitleAndLink(Element element) {
+    public TitleLink getTitleAndLink(Element element, String search) {
         TitleLink titleLink = new TitleLink();
         Element titleElem = element.select("td[class=subject] a").get(1);
         titleLink.setTitle(titleElem.text());
@@ -104,7 +104,7 @@ public class TorrentWalImpl implements ITorrentService {
     @Override
     public TBoard getBoard(String linkUrl) {
         TBoard board = new TBoard();
-        Pattern pattern = Pattern.compile("net/(.+)/(\\d+)\\.html");
+        Pattern pattern = Pattern.compile("com/(.+)/(\\d+)\\.html");
         Matcher matcher = pattern.matcher(linkUrl);
         if (matcher.find()) {
             board.setName(matcher.group(1));
@@ -127,20 +127,28 @@ public class TorrentWalImpl implements ITorrentService {
 
     @Override
     public String getMagnet(Document doc, String prefer) {
-        Elements fileTableEm = doc.select("table[id=file_table] td");
-        Elements fileNameEm = fileTableEm.select("span");
-        if (fileTableEm.isEmpty()) {
+        Elements mainBodyALinks = doc.select("div[id=main_body] a");
+        if (mainBodyALinks.isEmpty()) {
             return null;
         }
-        int magnetIndex = getMagnetIndex(fileNameEm, prefer);
-        Elements magnetEm = doc.select("img[onclick]");
-        String onclick = magnetEm.get(magnetIndex).attr("onclick");
-        Pattern pattern = Pattern.compile("'(.+)',");
-        Matcher matcher = pattern.matcher(onclick);
-        if (!matcher.find()) {
-            return null;
+        String magnetLink = null;
+        for (Element mainBodyALink : mainBodyALinks) {
+            if (mainBodyALink.text() != null && mainBodyALink.text().startsWith("magnet:?xt=urn:btih")){
+                magnetLink = mainBodyALink.attr("href");
+                break;
+            }
         }
-        return String.format("magnet:?xt=urn:btih:%s", matcher.group(1));
+
+//        Elements fileNameEm = mainBodyALinks.select("span");
+//        int magnetIndex = getMagnetIndex(fileNameEm, prefer);
+//        Elements magnetEm = doc.select("img[onclick]");
+//        String onclick = magnetEm.get(magnetIndex).attr("onclick");
+//        Pattern pattern = Pattern.compile("'(.+)',");
+//        Matcher matcher = pattern.matcher(onclick);
+//        if (!matcher.find()) {
+//            return null;
+//        }
+        return magnetLink;
     }
 
     private int getMagnetIndex(Elements elements, String prefer) {

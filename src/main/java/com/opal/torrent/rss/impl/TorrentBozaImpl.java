@@ -23,12 +23,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Service(TFreecaImpl.SITE_SIMPLE_NAME)
-public class TFreecaImpl implements ITorrentService {
+@Service(TorrentBozaImpl.SITE_SIMPLE_NAME)
+public class TorrentBozaImpl implements ITorrentService {
 
-    final static String SITE_SIMPLE_NAME = "tf";
+    final static String SITE_SIMPLE_NAME = "tb";
 
-    @Value("${opal.torrent.rss.site.tf.url}")
+    @Value("${opal.torrent.rss.site.tb.url}")
     private String BASE_URL;
 
     @Override

@@ -4,11 +4,12 @@ server:
 opal:
   torrent:
     rss:
-      cache.expire: 1800000 # 30분
+      cache.expire: 1000 # 5분
       site:
         tf.url: http://www.tfreeca22.com
         th.url: https://torrenthaja.com
-        tw.url: https://torrentwal.net
+        tw.url: https://torrentwal.com
+        tb.url: https://torrentboza.net
 
 
 

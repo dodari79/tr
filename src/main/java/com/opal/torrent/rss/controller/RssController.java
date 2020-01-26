@@ -1,9 +1,11 @@
 package com.opal.torrent.rss.controller;
 
+import com.opal.torrent.rss.model.Quality;
 import com.opal.torrent.rss.service.RssService;
 import com.rometools.rome.feed.rss.Channel;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,9 +25,12 @@ public class RssController {
                                     @RequestParam String search,
                                     @RequestParam(defaultValue = "1", required = false) int page,
                                     @RequestParam(defaultValue = "1", required = false) int maxPage,
-                                    @RequestParam(required = false) String prefer) throws URISyntaxException {
+                                    @RequestParam(required = false) String prefer,
+                                    @RequestParam(required = false, defaultValue = "0") String startDate,
+                                    @RequestParam(required = false, defaultValue = "999999") String endDate,
+                                    @RequestParam(required = false) Quality quality) throws URISyntaxException {
 
-        return rssService.getRss(request, search, page, maxPage, prefer);
+        return rssService.getRss(request, search, page, maxPage, prefer, startDate, endDate, quality);
     }
 
     @GetMapping("/{site}/feed")
@@ -36,9 +41,12 @@ public class RssController {
                                             @RequestParam String search,
                                             @RequestParam(defaultValue = "1", required = false) int page,
                                             @RequestParam(defaultValue = "1", required = false) int maxPage,
-                                            @RequestParam(required = false) String prefer) throws URISyntaxException {
+                                            @RequestParam(required = false) String prefer,
+                                            @RequestParam(required = false, defaultValue = "0") String startDate,
+                                            @RequestParam(required = false, defaultValue = "999999") String endDate,
+                                            @RequestParam(required = false) Quality quality) throws URISyntaxException {
 
-        return rssService.getRssBySite(request, site, Arrays.asList(boards), search, page, maxPage, prefer);
+        return rssService.getRssBySite(request, site, Arrays.asList(boards), search, page, maxPage, prefer, startDate, endDate, quality);
     }
 
     @GetMapping("/{site}/{board}/{boardId}/down")
@@ -46,6 +54,12 @@ public class RssController {
                            @PathVariable("board") String board,
                            @PathVariable("boardId") String boardId,
                            @RequestParam(required = false) String prefer) {
-        return "redirect:" + rssService.getDownloadLink(site, board, boardId, prefer);
+        String downloadLink = rssService.getDownloadLink(site, board, boardId, prefer);
+        if (StringUtils.isEmpty(downloadLink) == false) {
+            return "redirect:" + downloadLink;
+        } else {
+            System.out.println("site="+ site+", board="+board+", boardId="+boardId +" download link is null");
+        }
+        return "";
     }
 }
